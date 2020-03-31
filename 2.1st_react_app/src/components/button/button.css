@@ -1,0 +1,6 @@
+.button-with-props,
+.button-with-children {
+    padding: 6px 14px;
+    color: #000000;
+    background-color: "pink";
+}
