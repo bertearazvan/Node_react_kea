@@ -20,102 +20,94 @@ const saltRounds = 10;
 // })
 
 router.post("/users/login", async (req, res) => {
+  const { username, password } = req.body;
 
-    const {
-        username,
-        password
-    } = req.body;
+  if (username && password) {
+    const users = await User.query()
+      .where({
+        username: username,
+      })
+      .limit(1);
+    const user = users[0];
 
-    if (username && password) {
-        const users = await User.query().where({
-            username: username
-        }).limit(1);
-        const user = users[0];
-
-        if (!user) {
-            return res.status(404).send({
-                message: "wrong username"
-            })
-        }
-
-        bcrypt.compare(password, user.password, (error, isSame) => {
-            if (error) {
-                return res.status(500).send({})
-            }
-            console.log(isSame)
-            if (!isSame) {
-                return res.status(404).send({
-                    message: "wrong password"
-                })
-            } else {
-                return res.send({
-                    response: user
-                })
-            }
-        })
-
-
-    } else {
-        return res.send({
-            message: "username or password not defined"
-        })
+    if (!user) {
+      return res.status(404).send({
+        message: "wrong username",
+      });
     }
 
-
-})
+    bcrypt.compare(password, user.password, (error, isSame) => {
+      if (error) {
+        return res.status(500).send({});
+      }
+      console.log(isSame);
+      if (!isSame) {
+        return res.status(404).send({
+          message: "wrong password",
+        });
+      } else {
+        return res.send({
+          response: user,
+        });
+      }
+    });
+  } else {
+    return res.send({
+      message: "username or password not defined",
+    });
+  }
+});
 
 router.post("/users/register", (req, res) => {
-    const {
-        username,
-        password,
-        repeatPassword
-    } = req.body;
+  const { username, password, repeatPassword } = req.body;
 
-    if (username && password && repeatPassword && password === repeatPassword) {
-
-        if (password.length <= 8) {
-            return res.status(400).send({
-                response: "Missing username or password"
-            })
-        } else {
-            bcrypt.hash(password, saltRounds, async (error, hashedPassword) => {
-                if (error) {
-                    return res.status(500).send({})
-                }
-                try {
-                    const existingUser = await User.query().select().where({
-                        username: username
-                    }).limit(1);
-
-                    if (existingUser[0]) {
-                        return res.status(404).send({
-                            response: "User already exists"
-                        })
-                    } else {
-                        const newUser = await User.query().insert({
-                            username,
-                            password: hashedPassword
-                        }).whereNotExists(() => {
-                            User.query().select().whereNot({
-                                username: username
-                            })
-                        })
-                        // return res.status(200).send({
-                        //     newUser
-                        // })
-                    }
-                } catch (err) {
-                    return res.status(500).send("Something went wrong")
-                }
-            })
-        }
+  if (username && password && repeatPassword && password === repeatPassword) {
+    if (password.length <= 8) {
+      return res.status(400).send({
+        response: "Missing username or password",
+      });
     } else {
-        return res.status(404).send({
-            message: "Missing field"
-        })
+      bcrypt.hash(password, saltRounds, async (error, hashedPassword) => {
+        if (error) {
+          return res.status(500).send({});
+        }
+        try {
+          const existingUser = await User.query()
+            .select()
+            .where({
+              username: username,
+            })
+            .limit(1);
+
+          if (existingUser[0]) {
+            return res.status(404).send({
+              response: "User already exists",
+            });
+          } else {
+            const newUser = await User.query()
+              .insert({
+                username,
+                password: hashedPassword,
+              })
+              .whereNotExists(() => {
+                User.query().select().whereNot({
+                  username: username,
+                });
+              });
+            return res.status(200).send({
+              newUser,
+            });
+          }
+        } catch (err) {
+          return res.status(500).send("Something went wrong");
+        }
+      });
     }
-
-
-})
+  } else {
+    return res.status(404).send({
+      message: "Missing field",
+    });
+  }
+});
 
 module.exports = router;
