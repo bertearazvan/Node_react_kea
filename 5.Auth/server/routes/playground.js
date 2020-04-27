@@ -1,11 +1,11 @@
 const router = require("express").Router();
 
-router.use((req, res, next) => {
-  console.log("Timestampt: ", new Date());
-  next();
-  //   return res.redirect("/secondpath");
-  //   res.send({ response: "First path" });
-});
+// router.use((req, res, next) => {
+//   console.log("Timestamp: ", new Date());
+//   next();
+//   //   return res.redirect("/secondpath");
+//   //   res.send({ response: "First path" });
+// });
 
 // router.use((req, res, next) => {
 //   console.log("Hit the second path");
@@ -13,7 +13,20 @@ router.use((req, res, next) => {
 // });
 
 router.get("/secondpath", (req, res, next) => {
-  console.log("Hit the second path");
+  console.log("Hit the second path for the first time");
+  next();
+});
+
+// // Controllers
+// // MVC
+// const customeValidateFunction = (next) => {
+//   if (valid) {
+//     next();
+//   }
+// };
+
+router.get("/secondpath", (req, res) => {
+  console.log("Hit the second path for the 2nd time");
   return res.send({ response: "Second path" });
 });
 

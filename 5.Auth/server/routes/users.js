@@ -40,7 +40,7 @@ router.post("/users/login", async (req, res) => {
       if (error) {
         return res.status(500).send({});
       }
-      console.log(isSame);
+      //   console.log(isSame);
       if (!isSame) {
         return res.status(404).send({
           message: "wrong password",

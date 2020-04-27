@@ -31,21 +31,20 @@ const authLimiter = rateLimit({
 app.use("/users/login", authLimiter);
 app.use("/users/register", authLimiter);
 
-
 // Routes
 const User = require("./models/User");
 const usersRoute = require("./routes/users");
 
 const playgroundRoute = require("./routes/playground");
 
-// app.use("/secondpath", playgroundRoute);
+app.use(playgroundRoute);
 app.use(usersRoute);
 
 app.get("/", async (req, res) => {
   //   const result = await knex.select().from("users");
   //   const addresses = await knex.select().from("addresses");
   return res.send({
-    resukt: await User.query(),
+    result: await User.query(),
   });
 });
 
