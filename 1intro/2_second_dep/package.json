@@ -3,6 +3,6 @@
     "start": "node ./index.js"
   },
   "dependencies": {
-    "validator": "^12.2.0"
+    "validator": "^13.7.0"
   }
 }
